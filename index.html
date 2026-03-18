@@ -85,7 +85,10 @@
   }
   </script>
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.2/jspdf.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+  <script>
+    if (!window.jspdf) document.write('<scr'+'ipt src="https://unpkg.com/jspdf@2.5.1/dist/jspdf.umd.min.js"><\/scr'+'ipt>');
+  </script>
   <style>
     *, *::before, *::after {
       margin: 0;
