@@ -1,0 +1,809 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gerador de Contratos</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.2/jspdf.umd.min.js"></script>
+  <style>
+    *, *::before, *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --primary: #1a3c5e;
+      --primary-light: #2a5f8f;
+      --accent: #d4a84b;
+      --bg: #f0f2f5;
+      --card: #ffffff;
+      --text: #1e1e2f;
+      --text-light: #5a5a72;
+      --border: #d8dce6;
+      --error: #d94452;
+      --radius: 10px;
+      --shadow: 0 4px 24px rgba(26, 60, 94, 0.08);
+      --shadow-lg: 0 12px 40px rgba(26, 60, 94, 0.15);
+    }
+
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      line-height: 1.6;
+    }
+
+    /* ---- Header ---- */
+    header {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+      color: #fff;
+      padding: 2.5rem 1rem 3.5rem;
+      text-align: center;
+      position: relative;
+    }
+
+    header::after {
+      content: '';
+      position: absolute;
+      bottom: -30px;
+      left: 0;
+      width: 100%;
+      height: 60px;
+      background: var(--bg);
+      border-radius: 50% 50% 0 0 / 100% 100% 0 0;
+    }
+
+    header h1 {
+      font-size: 2rem;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+    }
+
+    header p {
+      margin-top: .5rem;
+      opacity: .85;
+      font-size: .95rem;
+    }
+
+    .icon-doc {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 56px;
+      height: 56px;
+      background: rgba(255,255,255,.15);
+      border-radius: 16px;
+      margin-bottom: 1rem;
+      font-size: 1.7rem;
+    }
+
+    /* ---- Main ---- */
+    main {
+      max-width: 720px;
+      margin: -10px auto 3rem;
+      padding: 0 1rem;
+      position: relative;
+      z-index: 1;
+    }
+
+    .card {
+      background: var(--card);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 2rem 2rem 2.5rem;
+    }
+
+    .card-title {
+      font-size: 1.15rem;
+      font-weight: 600;
+      margin-bottom: 1.5rem;
+      padding-bottom: .75rem;
+      border-bottom: 2px solid var(--bg);
+      color: var(--primary);
+    }
+
+    /* ---- Form grid ---- */
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.25rem;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .form-group.full {
+      grid-column: 1 / -1;
+    }
+
+    label {
+      font-size: .82rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: .4px;
+      color: var(--text-light);
+      margin-bottom: .4rem;
+    }
+
+    input, select, textarea {
+      padding: .7rem .9rem;
+      border: 1.5px solid var(--border);
+      border-radius: 8px;
+      font-size: .95rem;
+      font-family: inherit;
+      color: var(--text);
+      background: #fafbfc;
+      transition: border-color .2s, box-shadow .2s;
+      outline: none;
+    }
+
+    input:focus, select:focus, textarea:focus {
+      border-color: var(--primary-light);
+      box-shadow: 0 0 0 3px rgba(42, 95, 143, .12);
+      background: #fff;
+    }
+
+    input.invalid, select.invalid, textarea.invalid {
+      border-color: var(--error);
+      box-shadow: 0 0 0 3px rgba(217, 68, 82, .1);
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 80px;
+    }
+
+    /* ---- Button ---- */
+    .btn-generate {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: .5rem;
+      width: 100%;
+      margin-top: 1.5rem;
+      padding: .9rem 1.5rem;
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+      color: #fff;
+      font-size: 1rem;
+      font-weight: 600;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: transform .15s, box-shadow .25s;
+      box-shadow: 0 4px 14px rgba(26, 60, 94, .25);
+    }
+
+    .btn-generate:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-lg);
+    }
+
+    .btn-generate:active {
+      transform: translateY(0);
+    }
+
+    .btn-generate svg {
+      width: 20px;
+      height: 20px;
+      fill: currentColor;
+    }
+
+    /* ---- Preview ---- */
+    .preview-section {
+      margin-top: 2rem;
+      display: none;
+    }
+
+    .preview-section.active {
+      display: block;
+    }
+
+    .preview-box {
+      background: #fff;
+      border: 1px dashed var(--border);
+      border-radius: var(--radius);
+      padding: 1.75rem 2rem;
+      font-size: .88rem;
+      color: var(--text-light);
+      line-height: 1.8;
+      max-height: 350px;
+      overflow-y: auto;
+    }
+
+    .preview-box h3 {
+      text-align: center;
+      color: var(--primary);
+      margin-bottom: .75rem;
+      font-size: 1.05rem;
+    }
+
+    .preview-box p {
+      margin-bottom: .5rem;
+      text-align: justify;
+    }
+
+    /* ---- Footer ---- */
+    footer {
+      text-align: center;
+      padding: 1.5rem 1rem;
+      font-size: .8rem;
+      color: var(--text-light);
+    }
+
+    /* ---- Toast ---- */
+    .toast {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      background: var(--primary);
+      color: #fff;
+      padding: .75rem 1.25rem;
+      border-radius: 8px;
+      font-size: .9rem;
+      box-shadow: var(--shadow-lg);
+      opacity: 0;
+      transform: translateY(20px);
+      transition: all .35s;
+      z-index: 100;
+      pointer-events: none;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* ---- Responsive ---- */
+    @media (max-width: 600px) {
+      header { padding: 2rem 1rem 3rem; }
+      header h1 { font-size: 1.5rem; }
+      .card { padding: 1.25rem 1.15rem 1.75rem; }
+      .form-grid { grid-template-columns: 1fr; }
+      .toast { left: 1rem; right: 1rem; text-align: center; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <header>
+    <div class="icon-doc">&#128196;</div>
+    <h1>Gerador de Contratos</h1>
+    <p>Preencha os dados e gere seu contrato em PDF com um clique</p>
+  </header>
+
+  <!-- Form -->
+  <main>
+    <div class="card">
+      <div class="card-title">Dados do Contrato</div>
+      <form id="contractForm" novalidate>
+        <div class="form-grid">
+
+          <div class="form-group">
+            <label for="contratante">Nome do Contratante</label>
+            <input type="text" id="contratante" placeholder="Ex.: Maria Silva" required>
+          </div>
+
+          <div class="form-group">
+            <label for="cpfContratante">CPF / CNPJ do Contratante</label>
+            <input type="text" id="cpfContratante" placeholder="000.000.000-00" required>
+          </div>
+
+          <div class="form-group">
+            <label for="contratado">Nome do Contratado</label>
+            <input type="text" id="contratado" placeholder="Ex.: Joao Oliveira" required>
+          </div>
+
+          <div class="form-group">
+            <label for="cpfContratado">CPF / CNPJ do Contratado</label>
+            <input type="text" id="cpfContratado" placeholder="000.000.000-00" required>
+          </div>
+
+          <div class="form-group full">
+            <label for="servico">Descricao do Servico</label>
+            <textarea id="servico" placeholder="Descreva o servico a ser prestado" required></textarea>
+          </div>
+
+          <div class="form-group">
+            <label for="valor">Valor (R$)</label>
+            <input type="text" id="valor" placeholder="Ex.: 5.000,00" required>
+          </div>
+
+          <div class="form-group">
+            <label for="pagamento">Forma de Pagamento</label>
+            <select id="pagamento" required>
+              <option value="">Selecione...</option>
+              <option value="A vista, via PIX">A vista via PIX</option>
+              <option value="A vista, via transferencia bancaria">A vista via transferencia bancaria</option>
+              <option value="A vista, em dinheiro">A vista em dinheiro</option>
+              <option value="Parcelado em 2x">Parcelado em 2x</option>
+              <option value="Parcelado em 3x">Parcelado em 3x</option>
+              <option value="Parcelado em 6x">Parcelado em 6x</option>
+              <option value="Parcelado em 12x">Parcelado em 12x</option>
+              <option value="50% na entrada e 50% na entrega">50% entrada + 50% entrega</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="prazo">Prazo de Entrega</label>
+            <input type="text" id="prazo" placeholder="Ex.: 30 dias" required>
+          </div>
+
+          <div class="form-group">
+            <label for="data">Data do Contrato</label>
+            <input type="date" id="data" required>
+          </div>
+
+        </div>
+
+        <button type="submit" class="btn-generate">
+          <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zm-1 2l5 5h-5V4zm-3 9v4H8v-4h2zm4 0v4h-2v-4h2zm-8 6v-1h12v1H6z"/></svg>
+          Gerar Contrato em PDF
+        </button>
+      </form>
+
+      <!-- Preview -->
+      <div class="preview-section" id="previewSection">
+        <div class="card-title" style="margin-top:.5rem">Pre-visualizacao</div>
+        <div class="preview-box" id="previewBox"></div>
+      </div>
+    </div>
+  </main>
+
+  <footer>&copy; 2026 Gerador de Contratos &mdash; Todos os direitos reservados</footer>
+
+  <!-- Toast -->
+  <div class="toast" id="toast"></div>
+
+  <script>
+    const { jsPDF } = window.jspdf;
+
+    /* ---------- helpers ---------- */
+    function formatDateBR(dateStr) {
+      if (!dateStr) return '';
+      const [y, m, d] = dateStr.split('-');
+      const months = [
+        'janeiro','fevereiro','marco','abril','maio','junho',
+        'julho','agosto','setembro','outubro','novembro','dezembro'
+      ];
+      return `${parseInt(d)} de ${months[parseInt(m) - 1]} de ${y}`;
+    }
+
+    function showToast(msg) {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.classList.add('show');
+      setTimeout(() => t.classList.remove('show'), 3000);
+    }
+
+    /* ---------- set today ---------- */
+    document.getElementById('data').valueAsDate = new Date();
+
+    /* ---------- form submit ---------- */
+    document.getElementById('contractForm').addEventListener('submit', function (e) {
+      e.preventDefault();
+
+      const fields = {
+        contratante: document.getElementById('contratante').value.trim(),
+        cpfContratante: document.getElementById('cpfContratante').value.trim(),
+        contratado: document.getElementById('contratado').value.trim(),
+        cpfContratado: document.getElementById('cpfContratado').value.trim(),
+        servico: document.getElementById('servico').value.trim(),
+        valor: document.getElementById('valor').value.trim(),
+        pagamento: document.getElementById('pagamento').value,
+        prazo: document.getElementById('prazo').value.trim(),
+        data: document.getElementById('data').value,
+      };
+
+      /* validate */
+      let valid = true;
+      document.querySelectorAll('.invalid').forEach(el => el.classList.remove('invalid'));
+      for (const [key, val] of Object.entries(fields)) {
+        if (!val) {
+          document.getElementById(key === 'cpfContratante' ? 'cpfContratante' :
+            key === 'cpfContratado' ? 'cpfContratado' : key).classList.add('invalid');
+          valid = false;
+        }
+      }
+      if (!valid) { showToast('Preencha todos os campos obrigatorios'); return; }
+
+      buildPreview(fields);
+      generatePDF(fields);
+    });
+
+    /* ---------- preview ---------- */
+    function buildPreview(f) {
+      const sec = document.getElementById('previewSection');
+      const box = document.getElementById('previewBox');
+      const dateFmt = formatDateBR(f.data);
+      box.innerHTML = `
+        <h3>CONTRATO DE PRESTACAO DE SERVICOS</h3>
+        <p><strong>CONTRATANTE:</strong> ${f.contratante} &mdash; CPF/CNPJ: ${f.cpfContratante}</p>
+        <p><strong>CONTRATADO(A):</strong> ${f.contratado} &mdash; CPF/CNPJ: ${f.cpfContratado}</p>
+        <p><strong>Servico:</strong> ${f.servico}</p>
+        <p><strong>Valor:</strong> R$ ${f.valor} | <strong>Pagamento:</strong> ${f.pagamento}</p>
+        <p><strong>Prazo:</strong> ${f.prazo} | <strong>Data:</strong> ${dateFmt}</p>
+      `;
+      sec.classList.add('active');
+      sec.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    /* ---------- PDF generation ---------- */
+    function generatePDF(f) {
+      const doc = new jsPDF({ unit: 'mm', format: 'a4' });
+      const W = doc.internal.pageSize.getWidth();
+      const H = doc.internal.pageSize.getHeight();
+      const marginL = 25;
+      const marginR = 25;
+      const contentW = W - marginL - marginR;
+      let y = 0;
+
+      const dateFmt = formatDateBR(f.data);
+      const cidade = 'cidade'; // placeholder
+
+      /* colors */
+      const navy = [26, 60, 94];
+      const gold = [212, 168, 75];
+      const dark = [30, 30, 47];
+      const grey = [100, 100, 114];
+
+      /* ---- helper: add text with word-wrap and page break ---- */
+      function needsPage(extraY) {
+        if (y + extraY > H - 30) {
+          doc.addPage();
+          y = 25;
+        }
+      }
+
+      function addParagraph(text, opts = {}) {
+        const fontSize = opts.size || 11;
+        const color = opts.color || dark;
+        const isBold = opts.bold || false;
+        const align = opts.align || 'justify';
+        const indent = opts.indent || 0;
+
+        doc.setFont('helvetica', isBold ? 'bold' : 'normal');
+        doc.setFontSize(fontSize);
+        doc.setTextColor(...color);
+
+        const lines = doc.splitTextToSize(text, contentW - indent);
+        for (let i = 0; i < lines.length; i++) {
+          needsPage(6);
+          if (align === 'center') {
+            doc.text(lines[i], W / 2, y, { align: 'center' });
+          } else {
+            doc.text(lines[i], marginL + indent, y, { align: 'left', maxWidth: contentW - indent });
+          }
+          y += fontSize * 0.45;
+        }
+        y += 2;
+      }
+
+      /* ================================================================
+         HEADER
+         ================================================================ */
+      /* top bar */
+      doc.setFillColor(...navy);
+      doc.rect(0, 0, W, 38, 'F');
+      doc.setFillColor(...gold);
+      doc.rect(0, 38, W, 2, 'F');
+
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(20);
+      doc.setTextColor(255, 255, 255);
+      doc.text('CONTRATO DE PRESTACAO', W / 2, 18, { align: 'center' });
+      doc.text('DE SERVICOS', W / 2, 28, { align: 'center' });
+
+      y = 52;
+
+      /* ================================================================
+         PARTIES
+         ================================================================ */
+      /* contratante box */
+      doc.setFillColor(240, 242, 245);
+      doc.roundedRect(marginL, y - 5, contentW, 22, 2, 2, 'F');
+
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(9);
+      doc.setTextColor(...navy);
+      doc.text('CONTRATANTE', marginL + 4, y + 1);
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(10);
+      doc.setTextColor(...dark);
+      doc.text(`${f.contratante}`, marginL + 4, y + 7);
+      doc.setFontSize(9);
+      doc.setTextColor(...grey);
+      doc.text(`CPF/CNPJ: ${f.cpfContratante}`, marginL + 4, y + 13);
+      y += 26;
+
+      /* contratado box */
+      doc.setFillColor(240, 242, 245);
+      doc.roundedRect(marginL, y - 5, contentW, 22, 2, 2, 'F');
+
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(9);
+      doc.setTextColor(...navy);
+      doc.text('CONTRATADO(A)', marginL + 4, y + 1);
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(10);
+      doc.setTextColor(...dark);
+      doc.text(`${f.contratado}`, marginL + 4, y + 7);
+      doc.setFontSize(9);
+      doc.setTextColor(...grey);
+      doc.text(`CPF/CNPJ: ${f.cpfContratado}`, marginL + 4, y + 13);
+      y += 30;
+
+      /* separator */
+      doc.setDrawColor(...gold);
+      doc.setLineWidth(0.5);
+      doc.line(marginL, y, W - marginR, y);
+      y += 10;
+
+      /* ================================================================
+         CLAUSULAS
+         ================================================================ */
+      function clauseTitle(num, title) {
+        needsPage(12);
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(11);
+        doc.setTextColor(...navy);
+        doc.text(`CLAUSULA ${num} - ${title}`, marginL, y);
+        y += 7;
+      }
+
+      /* -- 1. OBJETO -- */
+      clauseTitle('1a', 'DO OBJETO');
+      addParagraph(
+        `O presente contrato tem como objeto a prestacao dos seguintes servicos pelo(a) CONTRATADO(A) ao CONTRATANTE: ${f.servico}.`
+      );
+      addParagraph(
+        'O(A) CONTRATADO(A) se compromete a executar os servicos descritos acima com qualidade, diligencia e dentro dos padroes tecnicos exigidos.'
+      );
+      y += 3;
+
+      /* -- 2. VALOR -- */
+      clauseTitle('2a', 'DO VALOR E FORMA DE PAGAMENTO');
+      addParagraph(
+        `Pelos servicos prestados, o CONTRATANTE pagara ao(a) CONTRATADO(A) o valor total de R$ ${f.valor} (${valorPorExtenso(f.valor)}).`
+      );
+      addParagraph(
+        `Forma de pagamento: ${f.pagamento}.`
+      );
+      addParagraph(
+        'O atraso no pagamento implicara multa de 2% (dois por cento) sobre o valor devido, acrescido de juros de mora de 1% (um por cento) ao mes, calculados pro rata die.'
+      );
+      y += 3;
+
+      /* -- 3. PRAZO -- */
+      clauseTitle('3a', 'DO PRAZO');
+      addParagraph(
+        `O prazo para a execucao completa dos servicos objeto deste contrato e de ${f.prazo}, contados a partir da data de assinatura deste instrumento.`
+      );
+      addParagraph(
+        'O prazo podera ser prorrogado mediante acordo por escrito entre as partes.'
+      );
+      y += 3;
+
+      /* -- 4. OBRIGACOES DO CONTRATADO -- */
+      clauseTitle('4a', 'DAS OBRIGACOES DO(A) CONTRATADO(A)');
+      const obrigContratado = [
+        'Executar os servicos conforme especificacoes acordadas neste contrato;',
+        'Manter sigilo absoluto sobre informacoes confidenciais do CONTRATANTE;',
+        'Comunicar imediatamente qualquer impedimento que possa afetar a execucao dos servicos;',
+        'Entregar o servico dentro do prazo estipulado na Clausula 3a.'
+      ];
+      obrigContratado.forEach((item, i) => {
+        addParagraph(`${String.fromCharCode(97 + i)}) ${item}`, { indent: 4 });
+      });
+      y += 3;
+
+      /* -- 5. OBRIGACOES DO CONTRATANTE -- */
+      clauseTitle('5a', 'DAS OBRIGACOES DO CONTRATANTE');
+      const obrigContratante = [
+        'Fornecer ao(a) CONTRATADO(A) todas as informacoes e materiais necessarios para execucao dos servicos;',
+        'Efetuar o pagamento conforme estipulado na Clausula 2a deste contrato;',
+        'Respeitar os prazos para aprovacao de etapas intermediarias, quando houver.'
+      ];
+      obrigContratante.forEach((item, i) => {
+        addParagraph(`${String.fromCharCode(97 + i)}) ${item}`, { indent: 4 });
+      });
+      y += 3;
+
+      /* -- 6. RESCISAO -- */
+      clauseTitle('6a', 'DA RESCISAO');
+      addParagraph(
+        'O presente contrato podera ser rescindido por qualquer das partes mediante comunicacao por escrito com antecedencia minima de 15 (quinze) dias.'
+      );
+      addParagraph(
+        'Em caso de rescisao, serao devidos os valores proporcionais aos servicos ja executados ate a data da rescisao.'
+      );
+      addParagraph(
+        'A parte que der causa a rescisao por descumprimento contratual ficara responsavel pelo pagamento de multa equivalente a 10% (dez por cento) do valor total do contrato.'
+      );
+      y += 3;
+
+      /* -- 7. CONFIDENCIALIDADE -- */
+      clauseTitle('7a', 'DA CONFIDENCIALIDADE');
+      addParagraph(
+        'As partes se comprometem a manter sigilo sobre todas as informacoes confidenciais trocadas em razao deste contrato, durante sua vigencia e pelo periodo de 2 (dois) anos apos seu encerramento.'
+      );
+      y += 3;
+
+      /* -- 8. FORO -- */
+      clauseTitle('8a', 'DO FORO');
+      addParagraph(
+        'Para dirimir quaisquer controversias oriundas deste contrato, as partes elegem o foro da comarca do domicilio do CONTRATANTE, com exclusao de qualquer outro, por mais privilegiado que seja.'
+      );
+      y += 3;
+
+      /* -- 9. DISPOSICOES GERAIS -- */
+      clauseTitle('9a', 'DAS DISPOSICOES GERAIS');
+      addParagraph(
+        'Os casos omissos neste contrato serao resolvidos de comum acordo entre as partes, observando-se a legislacao vigente aplicavel.'
+      );
+      addParagraph(
+        'Este contrato e composto de clausulas reciprocamente aceitas e assinadas pelas partes, produzindo seus efeitos legais.'
+      );
+      y += 8;
+
+      /* ================================================================
+         SIGNATURE SECTION
+         ================================================================ */
+      needsPage(55);
+
+      addParagraph(
+        `E por estarem de pleno acordo com as condicoes e termos acima estabelecidos, as partes assinam o presente contrato em 2 (duas) vias de igual teor e forma, na presenca de 2 (duas) testemunhas.`,
+        { align: 'left' }
+      );
+      y += 5;
+
+      /* date */
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(11);
+      doc.setTextColor(...dark);
+      doc.text(`Local e data: _______________________, ${dateFmt}.`, marginL, y);
+      y += 20;
+
+      /* signatures */
+      const sigW = contentW / 2 - 5;
+
+      /* line 1 */
+      doc.setDrawColor(...navy);
+      doc.setLineWidth(0.3);
+      doc.line(marginL, y, marginL + sigW, y);
+      doc.line(marginL + sigW + 10, y, marginL + sigW * 2 + 10, y);
+
+      y += 5;
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(9);
+      doc.setTextColor(...navy);
+      doc.text('CONTRATANTE', marginL + sigW / 2, y, { align: 'center' });
+      doc.text('CONTRATADO(A)', marginL + sigW + 10 + sigW / 2, y, { align: 'center' });
+
+      y += 4;
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(9);
+      doc.setTextColor(...grey);
+      doc.text(f.contratante, marginL + sigW / 2, y, { align: 'center' });
+      doc.text(f.contratado, marginL + sigW + 10 + sigW / 2, y, { align: 'center' });
+
+      y += 20;
+
+      /* witnesses */
+      doc.setDrawColor(...grey);
+      doc.line(marginL, y, marginL + sigW, y);
+      doc.line(marginL + sigW + 10, y, marginL + sigW * 2 + 10, y);
+      y += 5;
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(9);
+      doc.setTextColor(...grey);
+      doc.text('Testemunha 1', marginL + sigW / 2, y, { align: 'center' });
+      doc.text('Testemunha 2', marginL + sigW + 10 + sigW / 2, y, { align: 'center' });
+
+      y += 4;
+      doc.text('Nome:', marginL, y);
+      doc.text('Nome:', marginL + sigW + 10, y);
+      y += 5;
+      doc.text('CPF:', marginL, y);
+      doc.text('CPF:', marginL + sigW + 10, y);
+
+      /* ================================================================
+         FOOTER on every page
+         ================================================================ */
+      const totalPages = doc.internal.getNumberOfPages();
+      for (let p = 1; p <= totalPages; p++) {
+        doc.setPage(p);
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(8);
+        doc.setTextColor(160, 160, 160);
+        doc.text(
+          `Pagina ${p} de ${totalPages}`,
+          W / 2, H - 10,
+          { align: 'center' }
+        );
+        /* bottom line */
+        doc.setDrawColor(200, 200, 200);
+        doc.setLineWidth(0.2);
+        doc.line(marginL, H - 15, W - marginR, H - 15);
+      }
+
+      /* ---- save ---- */
+      const fileName = `Contrato_${f.contratante.replace(/\s+/g, '_')}_${f.contratado.replace(/\s+/g, '_')}.pdf`;
+      doc.save(fileName);
+      showToast('PDF gerado com sucesso!');
+    }
+
+    /* ---------- valor por extenso (simplified) ---------- */
+    function valorPorExtenso(valor) {
+      /* Clean up and parse */
+      const clean = valor.replace(/[R$\s]/g, '').replace(/\./g, '').replace(',', '.');
+      const num = parseFloat(clean);
+      if (isNaN(num)) return valor;
+
+      const unidades = ['', 'um', 'dois', 'tres', 'quatro', 'cinco', 'seis', 'sete', 'oito', 'nove',
+        'dez', 'onze', 'doze', 'treze', 'quatorze', 'quinze', 'dezesseis', 'dezessete', 'dezoito', 'dezenove'];
+      const dezenas = ['', '', 'vinte', 'trinta', 'quarenta', 'cinquenta', 'sessenta', 'setenta', 'oitenta', 'noventa'];
+      const centenas = ['', 'cento', 'duzentos', 'trezentos', 'quatrocentos', 'quinhentos', 'seiscentos', 'setecentos', 'oitocentos', 'novecentos'];
+
+      function grupo(n) {
+        if (n === 0) return '';
+        if (n === 100) return 'cem';
+        let s = '';
+        const c = Math.floor(n / 100);
+        const r = n % 100;
+        if (c > 0) {
+          s += centenas[c];
+          if (r > 0) s += ' e ';
+        }
+        if (r < 20) {
+          s += unidades[r];
+        } else {
+          const d = Math.floor(r / 10);
+          const u = r % 10;
+          s += dezenas[d];
+          if (u > 0) s += ' e ' + unidades[u];
+        }
+        return s;
+      }
+
+      const inteiro = Math.floor(num);
+      const centavos = Math.round((num - inteiro) * 100);
+
+      if (inteiro === 0 && centavos === 0) return 'zero reais';
+
+      let result = '';
+
+      if (inteiro > 0) {
+        const milhoes = Math.floor(inteiro / 1000000);
+        const milhares = Math.floor((inteiro % 1000000) / 1000);
+        const resto = inteiro % 1000;
+
+        const parts = [];
+        if (milhoes > 0) {
+          parts.push(grupo(milhoes) + (milhoes === 1 ? ' milhao' : ' milhoes'));
+        }
+        if (milhares > 0) {
+          parts.push(grupo(milhares) + ' mil');
+        }
+        if (resto > 0) {
+          parts.push(grupo(resto));
+        }
+
+        result = parts.join(', ');
+        result += inteiro === 1 ? ' real' : ' reais';
+      }
+
+      if (centavos > 0) {
+        if (inteiro > 0) result += ' e ';
+        result += grupo(centavos) + (centavos === 1 ? ' centavo' : ' centavos');
+      }
+
+      return result;
+    }
+  </script>
+</body>
+</html>
