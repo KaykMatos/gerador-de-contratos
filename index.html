@@ -3,7 +3,88 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Gerador de Contratos</title>
+
+  <!-- SEO: Title -->
+  <title>Contraktor - Gerador de Contrato PDF Gratis | Modelo de Contrato de Prestacao de Servicos</title>
+
+  <!-- SEO: Meta Tags -->
+  <meta name="description" content="Gere contratos de prestacao de servicos em PDF gratis. Preencha os dados, escolha as clausulas e baixe seu contrato profissional em segundos. Sem cadastro.">
+  <meta name="keywords" content="gerador de contrato PDF, contrato de prestacao de servicos, modelo de contrato gratis, fazer contrato online, gerador de contrato gratis, contrato PDF online, modelo contrato freelancer, contrato de servico, gerar contrato automatico">
+  <meta name="author" content="Contraktor">
+  <meta name="robots" content="index, follow">
+  <meta name="googlebot" content="index, follow">
+  <link rel="canonical" href="https://seuusuario.github.io/gerador-de-contratos/">
+
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="pt_BR">
+  <meta property="og:title" content="Contraktor - Gerador de Contrato PDF Gratis">
+  <meta property="og:description" content="Crie contratos de prestacao de servicos em PDF com clausulas profissionais. Gratis, sem cadastro, direto no navegador.">
+  <meta property="og:url" content="https://seuusuario.github.io/gerador-de-contratos/">
+  <meta property="og:site_name" content="Contraktor">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Contraktor - Gerador de Contrato PDF Gratis">
+  <meta name="twitter:description" content="Crie contratos de prestacao de servicos em PDF com clausulas profissionais. Gratis, sem cadastro, direto no navegador.">
+
+  <!-- Schema.org JSON-LD -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "Contraktor",
+    "url": "https://seuusuario.github.io/gerador-de-contratos/",
+    "description": "Gerador gratuito de contratos de prestacao de servicos em PDF. Preencha os dados e baixe seu contrato profissional em segundos.",
+    "applicationCategory": "BusinessApplication",
+    "operatingSystem": "All",
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "BRL"
+    },
+    "inLanguage": "pt-BR",
+    "browserRequirements": "Requires JavaScript",
+    "softwareVersion": "1.0",
+    "creator": {
+      "@type": "Organization",
+      "name": "Contraktor"
+    }
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "Como gerar um contrato de prestacao de servicos em PDF?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Basta preencher os dados do contratante, contratado, servico, valor e prazo no formulario do Contraktor. Clique em Gerar Contrato e o PDF profissional sera baixado automaticamente."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "O gerador de contratos e gratuito?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Sim, o Contraktor e 100% gratuito. Nao exige cadastro, login ou pagamento. Voce pode gerar quantos contratos quiser."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "O contrato gerado tem validade juridica?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "O contrato gerado serve como modelo base. Para validade juridica plena, recomenda-se a revisao por um advogado e o reconhecimento de firma das assinaturas."
+        }
+      }
+    ]
+  }
+  </script>
+
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.2/jspdf.umd.min.js"></script>
   <style>
     *, *::before, *::after {
@@ -152,6 +233,18 @@
       box-shadow: 0 0 0 3px rgba(217, 68, 82, .1);
     }
 
+    .field-error {
+      font-size: .75rem;
+      color: var(--error);
+      margin-top: .25rem;
+      min-height: 1rem;
+      display: none;
+    }
+
+    .field-error.visible {
+      display: block;
+    }
+
     textarea {
       resize: vertical;
       min-height: 80px;
@@ -272,7 +365,7 @@
   <!-- Header -->
   <header>
     <div class="icon-doc">&#128196;</div>
-    <h1>Gerador de Contratos</h1>
+    <h1>Contraktor</h1>
     <p>Preencha os dados e gere seu contrato em PDF com um clique</p>
   </header>
 
@@ -286,31 +379,37 @@
           <div class="form-group">
             <label for="contratante">Nome do Contratante</label>
             <input type="text" id="contratante" placeholder="Ex.: Maria Silva" required>
+            <span class="field-error" id="err-contratante"></span>
           </div>
 
           <div class="form-group">
             <label for="cpfContratante">CPF / CNPJ do Contratante</label>
-            <input type="text" id="cpfContratante" placeholder="000.000.000-00" required>
+            <input type="text" id="cpfContratante" placeholder="000.000.000-00" inputmode="numeric" maxlength="18" required>
+            <span class="field-error" id="err-cpfContratante"></span>
           </div>
 
           <div class="form-group">
             <label for="contratado">Nome do Contratado</label>
             <input type="text" id="contratado" placeholder="Ex.: Joao Oliveira" required>
+            <span class="field-error" id="err-contratado"></span>
           </div>
 
           <div class="form-group">
             <label for="cpfContratado">CPF / CNPJ do Contratado</label>
-            <input type="text" id="cpfContratado" placeholder="000.000.000-00" required>
+            <input type="text" id="cpfContratado" placeholder="000.000.000-00" inputmode="numeric" maxlength="18" required>
+            <span class="field-error" id="err-cpfContratado"></span>
           </div>
 
           <div class="form-group full">
             <label for="servico">Descricao do Servico</label>
             <textarea id="servico" placeholder="Descreva o servico a ser prestado" required></textarea>
+            <span class="field-error" id="err-servico"></span>
           </div>
 
           <div class="form-group">
             <label for="valor">Valor (R$)</label>
             <input type="text" id="valor" placeholder="Ex.: 5.000,00" required>
+            <span class="field-error" id="err-valor"></span>
           </div>
 
           <div class="form-group">
@@ -326,16 +425,19 @@
               <option value="Parcelado em 12x">Parcelado em 12x</option>
               <option value="50% na entrada e 50% na entrega">50% entrada + 50% entrega</option>
             </select>
+            <span class="field-error" id="err-pagamento"></span>
           </div>
 
           <div class="form-group">
             <label for="prazo">Prazo de Entrega</label>
             <input type="text" id="prazo" placeholder="Ex.: 30 dias" required>
+            <span class="field-error" id="err-prazo"></span>
           </div>
 
           <div class="form-group">
             <label for="data">Data do Contrato</label>
             <input type="date" id="data" required>
+            <span class="field-error" id="err-data"></span>
           </div>
 
         </div>
@@ -354,15 +456,24 @@
     </div>
   </main>
 
-  <footer>&copy; 2026 Gerador de Contratos &mdash; Todos os direitos reservados</footer>
+  <footer>Contraktor &copy; 2026</footer>
 
   <!-- Toast -->
   <div class="toast" id="toast"></div>
 
   <script>
+    if (!window.jspdf) {
+      document.getElementById('contractForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        alert('Erro: biblioteca jsPDF nao carregou. Verifique sua conexao com a internet e recarregue a pagina.');
+      });
+      throw new Error('jsPDF nao carregou');
+    }
     const { jsPDF } = window.jspdf;
 
-    /* ---------- helpers ---------- */
+    /* ================================================================
+       HELPERS
+       ================================================================ */
     function formatDateBR(dateStr) {
       if (!dateStr) return '';
       const [y, m, d] = dateStr.split('-');
@@ -373,19 +484,152 @@
       return `${parseInt(d)} de ${months[parseInt(m) - 1]} de ${y}`;
     }
 
-    function showToast(msg) {
+    function showToast(msg, isError) {
       const t = document.getElementById('toast');
       t.textContent = msg;
+      t.style.background = isError ? '#d94452' : '#1a3c5e';
       t.classList.add('show');
-      setTimeout(() => t.classList.remove('show'), 3000);
+      setTimeout(() => t.classList.remove('show'), 3500);
     }
 
-    /* ---------- set today ---------- */
+    /* ================================================================
+       MASCARA CPF / CNPJ
+       Digita numeros e a mascara se aplica automaticamente.
+       Ate 11 digitos = CPF (000.000.000-00)
+       12+ digitos   = CNPJ (00.000.000/0000-00)
+       ================================================================ */
+    function applyCpfCnpjMask(value) {
+      const digits = value.replace(/\D/g, '').slice(0, 14);
+      if (digits.length <= 11) {
+        // CPF: 000.000.000-00
+        return digits
+          .replace(/(\d{3})(\d)/, '$1.$2')
+          .replace(/(\d{3})(\d)/, '$1.$2')
+          .replace(/(\d{3})(\d{1,2})$/, '$1-$2');
+      }
+      // CNPJ: 00.000.000/0000-00
+      return digits
+        .replace(/(\d{2})(\d)/, '$1.$2')
+        .replace(/(\d{3})(\d)/, '$1.$2')
+        .replace(/(\d{3})(\d)/, '$1/$2')
+        .replace(/(\d{4})(\d{1,2})$/, '$1-$2');
+    }
+
+    document.querySelectorAll('#cpfContratante, #cpfContratado').forEach(input => {
+      input.addEventListener('input', function () {
+        const pos = this.selectionStart;
+        const oldLen = this.value.length;
+        this.value = applyCpfCnpjMask(this.value);
+        const newLen = this.value.length;
+        const newPos = pos + (newLen - oldLen);
+        this.setSelectionRange(newPos, newPos);
+      });
+    });
+
+    /* ================================================================
+       VALIDACAO CPF (digitos verificadores reais)
+       ================================================================ */
+    function validarCPF(cpf) {
+      const nums = cpf.replace(/\D/g, '');
+      if (nums.length !== 11) return false;
+      // rejeitar sequencias iguais (000.000.000-00, 111... etc)
+      if (/^(\d)\1{10}$/.test(nums)) return false;
+
+      // primeiro digito verificador
+      let soma = 0;
+      for (let i = 0; i < 9; i++) soma += parseInt(nums[i]) * (10 - i);
+      let resto = (soma * 10) % 11;
+      if (resto === 10) resto = 0;
+      if (resto !== parseInt(nums[9])) return false;
+
+      // segundo digito verificador
+      soma = 0;
+      for (let i = 0; i < 10; i++) soma += parseInt(nums[i]) * (11 - i);
+      resto = (soma * 10) % 11;
+      if (resto === 10) resto = 0;
+      if (resto !== parseInt(nums[10])) return false;
+
+      return true;
+    }
+
+    /* ================================================================
+       VALIDACAO CNPJ (digitos verificadores reais)
+       ================================================================ */
+    function validarCNPJ(cnpj) {
+      const nums = cnpj.replace(/\D/g, '');
+      if (nums.length !== 14) return false;
+      if (/^(\d)\1{13}$/.test(nums)) return false;
+
+      const pesos1 = [5,4,3,2,9,8,7,6,5,4,3,2];
+      const pesos2 = [6,5,4,3,2,9,8,7,6,5,4,3,2];
+
+      let soma = 0;
+      for (let i = 0; i < 12; i++) soma += parseInt(nums[i]) * pesos1[i];
+      let resto = soma % 11;
+      const d1 = resto < 2 ? 0 : 11 - resto;
+      if (parseInt(nums[12]) !== d1) return false;
+
+      soma = 0;
+      for (let i = 0; i < 13; i++) soma += parseInt(nums[i]) * pesos2[i];
+      resto = soma % 11;
+      const d2 = resto < 2 ? 0 : 11 - resto;
+      if (parseInt(nums[13]) !== d2) return false;
+
+      return true;
+    }
+
+    function validarCpfCnpj(value) {
+      const digits = value.replace(/\D/g, '');
+      if (digits.length <= 11) return validarCPF(value);
+      return validarCNPJ(value);
+    }
+
+    /* ================================================================
+       VALIDACAO DO FORMULARIO
+       ================================================================ */
+    function setFieldError(id, msg) {
+      const el = document.getElementById(id);
+      const errEl = document.getElementById('err-' + id);
+      if (msg) {
+        el.classList.add('invalid');
+        errEl.textContent = msg;
+        errEl.classList.add('visible');
+      } else {
+        el.classList.remove('invalid');
+        errEl.textContent = '';
+        errEl.classList.remove('visible');
+      }
+    }
+
+    function clearAllErrors() {
+      document.querySelectorAll('.invalid').forEach(el => el.classList.remove('invalid'));
+      document.querySelectorAll('.field-error').forEach(el => {
+        el.textContent = '';
+        el.classList.remove('visible');
+      });
+    }
+
+    // Limpar erro individual ao digitar
+    document.querySelectorAll('#contractForm input, #contractForm select, #contractForm textarea').forEach(el => {
+      el.addEventListener('input', function () {
+        setFieldError(this.id, '');
+      });
+      el.addEventListener('change', function () {
+        setFieldError(this.id, '');
+      });
+    });
+
+    /* ================================================================
+       SET TODAY
+       ================================================================ */
     document.getElementById('data').valueAsDate = new Date();
 
-    /* ---------- form submit ---------- */
+    /* ================================================================
+       FORM SUBMIT
+       ================================================================ */
     document.getElementById('contractForm').addEventListener('submit', function (e) {
       e.preventDefault();
+      clearAllErrors();
 
       const fields = {
         contratante: document.getElementById('contratante').value.trim(),
@@ -399,23 +643,65 @@
         data: document.getElementById('data').value,
       };
 
-      /* validate */
       let valid = true;
-      document.querySelectorAll('.invalid').forEach(el => el.classList.remove('invalid'));
-      for (const [key, val] of Object.entries(fields)) {
-        if (!val) {
-          document.getElementById(key === 'cpfContratante' ? 'cpfContratante' :
-            key === 'cpfContratado' ? 'cpfContratado' : key).classList.add('invalid');
-          valid = false;
-        }
-      }
-      if (!valid) { showToast('Preencha todos os campos obrigatorios'); return; }
 
-      buildPreview(fields);
-      generatePDF(fields);
+      // campos obrigatorios
+      if (!fields.contratante) { setFieldError('contratante', 'Informe o nome do contratante'); valid = false; }
+      if (!fields.contratado)  { setFieldError('contratado', 'Informe o nome do contratado'); valid = false; }
+      if (!fields.servico)     { setFieldError('servico', 'Descreva o servico'); valid = false; }
+      if (!fields.valor)       { setFieldError('valor', 'Informe o valor'); valid = false; }
+      if (!fields.pagamento)   { setFieldError('pagamento', 'Selecione a forma de pagamento'); valid = false; }
+      if (!fields.prazo)       { setFieldError('prazo', 'Informe o prazo de entrega'); valid = false; }
+      if (!fields.data)        { setFieldError('data', 'Selecione a data do contrato'); valid = false; }
+
+      // validacao CPF/CNPJ contratante
+      if (!fields.cpfContratante) {
+        setFieldError('cpfContratante', 'Informe o CPF ou CNPJ');
+        valid = false;
+      } else if (!validarCpfCnpj(fields.cpfContratante)) {
+        const digits = fields.cpfContratante.replace(/\D/g, '');
+        if (digits.length <= 11) {
+          setFieldError('cpfContratante', 'CPF invalido. Verifique os digitos');
+        } else {
+          setFieldError('cpfContratante', 'CNPJ invalido. Verifique os digitos');
+        }
+        valid = false;
+      }
+
+      // validacao CPF/CNPJ contratado
+      if (!fields.cpfContratado) {
+        setFieldError('cpfContratado', 'Informe o CPF ou CNPJ');
+        valid = false;
+      } else if (!validarCpfCnpj(fields.cpfContratado)) {
+        const digits = fields.cpfContratado.replace(/\D/g, '');
+        if (digits.length <= 11) {
+          setFieldError('cpfContratado', 'CPF invalido. Verifique os digitos');
+        } else {
+          setFieldError('cpfContratado', 'CNPJ invalido. Verifique os digitos');
+        }
+        valid = false;
+      }
+
+      if (!valid) {
+        showToast('Corrija os campos destacados em vermelho', true);
+        // scroll ate o primeiro campo com erro
+        const firstErr = document.querySelector('.invalid');
+        if (firstErr) firstErr.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        return;
+      }
+
+      try {
+        buildPreview(fields);
+        generatePDF(fields);
+      } catch (err) {
+        console.error('Erro ao gerar PDF:', err);
+        showToast('Erro ao gerar o PDF. Verifique o console.', true);
+      }
     });
 
-    /* ---------- preview ---------- */
+    /* ================================================================
+       PREVIEW
+       ================================================================ */
     function buildPreview(f) {
       const sec = document.getElementById('previewSection');
       const box = document.getElementById('previewBox');
@@ -432,7 +718,9 @@
       sec.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
 
-    /* ---------- PDF generation ---------- */
+    /* ================================================================
+       PDF GENERATION
+       ================================================================ */
     function generatePDF(f) {
       const doc = new jsPDF({ unit: 'mm', format: 'a4' });
       const W = doc.internal.pageSize.getWidth();
@@ -443,7 +731,6 @@
       let y = 0;
 
       const dateFmt = formatDateBR(f.data);
-      const cidade = 'cidade'; // placeholder
 
       /* colors */
       const navy = [26, 60, 94];
@@ -451,7 +738,6 @@
       const dark = [30, 30, 47];
       const grey = [100, 100, 114];
 
-      /* ---- helper: add text with word-wrap and page break ---- */
       function needsPage(extraY) {
         if (y + extraY > H - 30) {
           doc.addPage();
@@ -483,10 +769,7 @@
         y += 2;
       }
 
-      /* ================================================================
-         HEADER
-         ================================================================ */
-      /* top bar */
+      /* HEADER */
       doc.setFillColor(...navy);
       doc.rect(0, 0, W, 38, 'F');
       doc.setFillColor(...gold);
@@ -500,13 +783,9 @@
 
       y = 52;
 
-      /* ================================================================
-         PARTIES
-         ================================================================ */
-      /* contratante box */
+      /* PARTIES */
       doc.setFillColor(240, 242, 245);
       doc.roundedRect(marginL, y - 5, contentW, 22, 2, 2, 'F');
-
       doc.setFont('helvetica', 'bold');
       doc.setFontSize(9);
       doc.setTextColor(...navy);
@@ -514,16 +793,14 @@
       doc.setFont('helvetica', 'normal');
       doc.setFontSize(10);
       doc.setTextColor(...dark);
-      doc.text(`${f.contratante}`, marginL + 4, y + 7);
+      doc.text(f.contratante, marginL + 4, y + 7);
       doc.setFontSize(9);
       doc.setTextColor(...grey);
-      doc.text(`CPF/CNPJ: ${f.cpfContratante}`, marginL + 4, y + 13);
+      doc.text('CPF/CNPJ: ' + f.cpfContratante, marginL + 4, y + 13);
       y += 26;
 
-      /* contratado box */
       doc.setFillColor(240, 242, 245);
       doc.roundedRect(marginL, y - 5, contentW, 22, 2, 2, 'F');
-
       doc.setFont('helvetica', 'bold');
       doc.setFontSize(9);
       doc.setTextColor(...navy);
@@ -531,169 +808,125 @@
       doc.setFont('helvetica', 'normal');
       doc.setFontSize(10);
       doc.setTextColor(...dark);
-      doc.text(`${f.contratado}`, marginL + 4, y + 7);
+      doc.text(f.contratado, marginL + 4, y + 7);
       doc.setFontSize(9);
       doc.setTextColor(...grey);
-      doc.text(`CPF/CNPJ: ${f.cpfContratado}`, marginL + 4, y + 13);
+      doc.text('CPF/CNPJ: ' + f.cpfContratado, marginL + 4, y + 13);
       y += 30;
 
-      /* separator */
       doc.setDrawColor(...gold);
       doc.setLineWidth(0.5);
       doc.line(marginL, y, W - marginR, y);
       y += 10;
 
-      /* ================================================================
-         CLAUSULAS
-         ================================================================ */
+      /* CLAUSULAS */
       function clauseTitle(num, title) {
         needsPage(12);
         doc.setFont('helvetica', 'bold');
         doc.setFontSize(11);
         doc.setTextColor(...navy);
-        doc.text(`CLAUSULA ${num} - ${title}`, marginL, y);
+        doc.text('CLAUSULA ' + num + ' - ' + title, marginL, y);
         y += 7;
       }
 
-      /* -- 1. OBJETO -- */
       clauseTitle('1a', 'DO OBJETO');
       addParagraph(
-        `O presente contrato tem como objeto a prestacao dos seguintes servicos pelo(a) CONTRATADO(A) ao CONTRATANTE: ${f.servico}.`
+        'O presente contrato tem como objeto a prestacao dos seguintes servicos pelo(a) CONTRATADO(A) ao CONTRATANTE: ' + f.servico + '.'
       );
       addParagraph(
         'O(A) CONTRATADO(A) se compromete a executar os servicos descritos acima com qualidade, diligencia e dentro dos padroes tecnicos exigidos.'
       );
       y += 3;
 
-      /* -- 2. VALOR -- */
       clauseTitle('2a', 'DO VALOR E FORMA DE PAGAMENTO');
       addParagraph(
-        `Pelos servicos prestados, o CONTRATANTE pagara ao(a) CONTRATADO(A) o valor total de R$ ${f.valor} (${valorPorExtenso(f.valor)}).`
+        'Pelos servicos prestados, o CONTRATANTE pagara ao(a) CONTRATADO(A) o valor total de R$ ' + f.valor + ' (' + valorPorExtenso(f.valor) + ').'
       );
-      addParagraph(
-        `Forma de pagamento: ${f.pagamento}.`
-      );
+      addParagraph('Forma de pagamento: ' + f.pagamento + '.');
       addParagraph(
         'O atraso no pagamento implicara multa de 2% (dois por cento) sobre o valor devido, acrescido de juros de mora de 1% (um por cento) ao mes, calculados pro rata die.'
       );
       y += 3;
 
-      /* -- 3. PRAZO -- */
       clauseTitle('3a', 'DO PRAZO');
       addParagraph(
-        `O prazo para a execucao completa dos servicos objeto deste contrato e de ${f.prazo}, contados a partir da data de assinatura deste instrumento.`
+        'O prazo para a execucao completa dos servicos objeto deste contrato e de ' + f.prazo + ', contados a partir da data de assinatura deste instrumento.'
       );
-      addParagraph(
-        'O prazo podera ser prorrogado mediante acordo por escrito entre as partes.'
-      );
+      addParagraph('O prazo podera ser prorrogado mediante acordo por escrito entre as partes.');
       y += 3;
 
-      /* -- 4. OBRIGACOES DO CONTRATADO -- */
       clauseTitle('4a', 'DAS OBRIGACOES DO(A) CONTRATADO(A)');
-      const obrigContratado = [
-        'Executar os servicos conforme especificacoes acordadas neste contrato;',
-        'Manter sigilo absoluto sobre informacoes confidenciais do CONTRATANTE;',
-        'Comunicar imediatamente qualquer impedimento que possa afetar a execucao dos servicos;',
-        'Entregar o servico dentro do prazo estipulado na Clausula 3a.'
-      ];
-      obrigContratado.forEach((item, i) => {
-        addParagraph(`${String.fromCharCode(97 + i)}) ${item}`, { indent: 4 });
+      ['Executar os servicos conforme especificacoes acordadas neste contrato;',
+       'Manter sigilo absoluto sobre informacoes confidenciais do CONTRATANTE;',
+       'Comunicar imediatamente qualquer impedimento que possa afetar a execucao dos servicos;',
+       'Entregar o servico dentro do prazo estipulado na Clausula 3a.'
+      ].forEach(function (item, i) {
+        addParagraph(String.fromCharCode(97 + i) + ') ' + item, { indent: 4 });
       });
       y += 3;
 
-      /* -- 5. OBRIGACOES DO CONTRATANTE -- */
       clauseTitle('5a', 'DAS OBRIGACOES DO CONTRATANTE');
-      const obrigContratante = [
-        'Fornecer ao(a) CONTRATADO(A) todas as informacoes e materiais necessarios para execucao dos servicos;',
-        'Efetuar o pagamento conforme estipulado na Clausula 2a deste contrato;',
-        'Respeitar os prazos para aprovacao de etapas intermediarias, quando houver.'
-      ];
-      obrigContratante.forEach((item, i) => {
-        addParagraph(`${String.fromCharCode(97 + i)}) ${item}`, { indent: 4 });
+      ['Fornecer ao(a) CONTRATADO(A) todas as informacoes e materiais necessarios para execucao dos servicos;',
+       'Efetuar o pagamento conforme estipulado na Clausula 2a deste contrato;',
+       'Respeitar os prazos para aprovacao de etapas intermediarias, quando houver.'
+      ].forEach(function (item, i) {
+        addParagraph(String.fromCharCode(97 + i) + ') ' + item, { indent: 4 });
       });
       y += 3;
 
-      /* -- 6. RESCISAO -- */
       clauseTitle('6a', 'DA RESCISAO');
-      addParagraph(
-        'O presente contrato podera ser rescindido por qualquer das partes mediante comunicacao por escrito com antecedencia minima de 15 (quinze) dias.'
-      );
-      addParagraph(
-        'Em caso de rescisao, serao devidos os valores proporcionais aos servicos ja executados ate a data da rescisao.'
-      );
-      addParagraph(
-        'A parte que der causa a rescisao por descumprimento contratual ficara responsavel pelo pagamento de multa equivalente a 10% (dez por cento) do valor total do contrato.'
-      );
+      addParagraph('O presente contrato podera ser rescindido por qualquer das partes mediante comunicacao por escrito com antecedencia minima de 15 (quinze) dias.');
+      addParagraph('Em caso de rescisao, serao devidos os valores proporcionais aos servicos ja executados ate a data da rescisao.');
+      addParagraph('A parte que der causa a rescisao por descumprimento contratual ficara responsavel pelo pagamento de multa equivalente a 10% (dez por cento) do valor total do contrato.');
       y += 3;
 
-      /* -- 7. CONFIDENCIALIDADE -- */
       clauseTitle('7a', 'DA CONFIDENCIALIDADE');
-      addParagraph(
-        'As partes se comprometem a manter sigilo sobre todas as informacoes confidenciais trocadas em razao deste contrato, durante sua vigencia e pelo periodo de 2 (dois) anos apos seu encerramento.'
-      );
+      addParagraph('As partes se comprometem a manter sigilo sobre todas as informacoes confidenciais trocadas em razao deste contrato, durante sua vigencia e pelo periodo de 2 (dois) anos apos seu encerramento.');
       y += 3;
 
-      /* -- 8. FORO -- */
       clauseTitle('8a', 'DO FORO');
-      addParagraph(
-        'Para dirimir quaisquer controversias oriundas deste contrato, as partes elegem o foro da comarca do domicilio do CONTRATANTE, com exclusao de qualquer outro, por mais privilegiado que seja.'
-      );
+      addParagraph('Para dirimir quaisquer controversias oriundas deste contrato, as partes elegem o foro da comarca do domicilio do CONTRATANTE, com exclusao de qualquer outro, por mais privilegiado que seja.');
       y += 3;
 
-      /* -- 9. DISPOSICOES GERAIS -- */
       clauseTitle('9a', 'DAS DISPOSICOES GERAIS');
-      addParagraph(
-        'Os casos omissos neste contrato serao resolvidos de comum acordo entre as partes, observando-se a legislacao vigente aplicavel.'
-      );
-      addParagraph(
-        'Este contrato e composto de clausulas reciprocamente aceitas e assinadas pelas partes, produzindo seus efeitos legais.'
-      );
+      addParagraph('Os casos omissos neste contrato serao resolvidos de comum acordo entre as partes, observando-se a legislacao vigente aplicavel.');
+      addParagraph('Este contrato e composto de clausulas reciprocamente aceitas e assinadas pelas partes, produzindo seus efeitos legais.');
       y += 8;
 
-      /* ================================================================
-         SIGNATURE SECTION
-         ================================================================ */
+      /* SIGNATURES */
       needsPage(55);
-
       addParagraph(
-        `E por estarem de pleno acordo com as condicoes e termos acima estabelecidos, as partes assinam o presente contrato em 2 (duas) vias de igual teor e forma, na presenca de 2 (duas) testemunhas.`,
+        'E por estarem de pleno acordo com as condicoes e termos acima estabelecidos, as partes assinam o presente contrato em 2 (duas) vias de igual teor e forma, na presenca de 2 (duas) testemunhas.',
         { align: 'left' }
       );
       y += 5;
 
-      /* date */
       doc.setFont('helvetica', 'normal');
       doc.setFontSize(11);
       doc.setTextColor(...dark);
-      doc.text(`Local e data: _______________________, ${dateFmt}.`, marginL, y);
+      doc.text('Local e data: _______________________, ' + dateFmt + '.', marginL, y);
       y += 20;
 
-      /* signatures */
       const sigW = contentW / 2 - 5;
 
-      /* line 1 */
       doc.setDrawColor(...navy);
       doc.setLineWidth(0.3);
       doc.line(marginL, y, marginL + sigW, y);
       doc.line(marginL + sigW + 10, y, marginL + sigW * 2 + 10, y);
-
       y += 5;
       doc.setFont('helvetica', 'bold');
       doc.setFontSize(9);
       doc.setTextColor(...navy);
       doc.text('CONTRATANTE', marginL + sigW / 2, y, { align: 'center' });
       doc.text('CONTRATADO(A)', marginL + sigW + 10 + sigW / 2, y, { align: 'center' });
-
       y += 4;
       doc.setFont('helvetica', 'normal');
       doc.setFontSize(9);
       doc.setTextColor(...grey);
       doc.text(f.contratante, marginL + sigW / 2, y, { align: 'center' });
       doc.text(f.contratado, marginL + sigW + 10 + sigW / 2, y, { align: 'center' });
-
       y += 20;
 
-      /* witnesses */
       doc.setDrawColor(...grey);
       doc.line(marginL, y, marginL + sigW, y);
       doc.line(marginL + sigW + 10, y, marginL + sigW * 2 + 10, y);
@@ -703,7 +936,6 @@
       doc.setTextColor(...grey);
       doc.text('Testemunha 1', marginL + sigW / 2, y, { align: 'center' });
       doc.text('Testemunha 2', marginL + sigW + 10 + sigW / 2, y, { align: 'center' });
-
       y += 4;
       doc.text('Nome:', marginL, y);
       doc.text('Nome:', marginL + sigW + 10, y);
@@ -711,50 +943,43 @@
       doc.text('CPF:', marginL, y);
       doc.text('CPF:', marginL + sigW + 10, y);
 
-      /* ================================================================
-         FOOTER on every page
-         ================================================================ */
+      /* FOOTER on every page */
       const totalPages = doc.internal.getNumberOfPages();
       for (let p = 1; p <= totalPages; p++) {
         doc.setPage(p);
         doc.setFont('helvetica', 'normal');
         doc.setFontSize(8);
         doc.setTextColor(160, 160, 160);
-        doc.text(
-          `Pagina ${p} de ${totalPages}`,
-          W / 2, H - 10,
-          { align: 'center' }
-        );
-        /* bottom line */
+        doc.text('Pagina ' + p + ' de ' + totalPages, W / 2, H - 10, { align: 'center' });
         doc.setDrawColor(200, 200, 200);
         doc.setLineWidth(0.2);
         doc.line(marginL, H - 15, W - marginR, H - 15);
       }
 
-      /* ---- save ---- */
-      const fileName = `Contrato_${f.contratante.replace(/\s+/g, '_')}_${f.contratado.replace(/\s+/g, '_')}.pdf`;
+      var fileName = 'Contrato_' + f.contratante.replace(/\s+/g, '_') + '_' + f.contratado.replace(/\s+/g, '_') + '.pdf';
       doc.save(fileName);
       showToast('PDF gerado com sucesso!');
     }
 
-    /* ---------- valor por extenso (simplified) ---------- */
+    /* ================================================================
+       VALOR POR EXTENSO
+       ================================================================ */
     function valorPorExtenso(valor) {
-      /* Clean up and parse */
-      const clean = valor.replace(/[R$\s]/g, '').replace(/\./g, '').replace(',', '.');
-      const num = parseFloat(clean);
+      var clean = valor.replace(/[R$\s]/g, '').replace(/\./g, '').replace(',', '.');
+      var num = parseFloat(clean);
       if (isNaN(num)) return valor;
 
-      const unidades = ['', 'um', 'dois', 'tres', 'quatro', 'cinco', 'seis', 'sete', 'oito', 'nove',
+      var unidades = ['', 'um', 'dois', 'tres', 'quatro', 'cinco', 'seis', 'sete', 'oito', 'nove',
         'dez', 'onze', 'doze', 'treze', 'quatorze', 'quinze', 'dezesseis', 'dezessete', 'dezoito', 'dezenove'];
-      const dezenas = ['', '', 'vinte', 'trinta', 'quarenta', 'cinquenta', 'sessenta', 'setenta', 'oitenta', 'noventa'];
-      const centenas = ['', 'cento', 'duzentos', 'trezentos', 'quatrocentos', 'quinhentos', 'seiscentos', 'setecentos', 'oitocentos', 'novecentos'];
+      var dezenas = ['', '', 'vinte', 'trinta', 'quarenta', 'cinquenta', 'sessenta', 'setenta', 'oitenta', 'noventa'];
+      var centenas = ['', 'cento', 'duzentos', 'trezentos', 'quatrocentos', 'quinhentos', 'seiscentos', 'setecentos', 'oitocentos', 'novecentos'];
 
       function grupo(n) {
         if (n === 0) return '';
         if (n === 100) return 'cem';
-        let s = '';
-        const c = Math.floor(n / 100);
-        const r = n % 100;
+        var s = '';
+        var c = Math.floor(n / 100);
+        var r = n % 100;
         if (c > 0) {
           s += centenas[c];
           if (r > 0) s += ' e ';
@@ -762,36 +987,30 @@
         if (r < 20) {
           s += unidades[r];
         } else {
-          const d = Math.floor(r / 10);
-          const u = r % 10;
+          var d = Math.floor(r / 10);
+          var u = r % 10;
           s += dezenas[d];
           if (u > 0) s += ' e ' + unidades[u];
         }
         return s;
       }
 
-      const inteiro = Math.floor(num);
-      const centavos = Math.round((num - inteiro) * 100);
+      var inteiro = Math.floor(num);
+      var centavos = Math.round((num - inteiro) * 100);
 
       if (inteiro === 0 && centavos === 0) return 'zero reais';
 
-      let result = '';
+      var result = '';
 
       if (inteiro > 0) {
-        const milhoes = Math.floor(inteiro / 1000000);
-        const milhares = Math.floor((inteiro % 1000000) / 1000);
-        const resto = inteiro % 1000;
+        var milhoes = Math.floor(inteiro / 1000000);
+        var milhares = Math.floor((inteiro % 1000000) / 1000);
+        var resto = inteiro % 1000;
 
-        const parts = [];
-        if (milhoes > 0) {
-          parts.push(grupo(milhoes) + (milhoes === 1 ? ' milhao' : ' milhoes'));
-        }
-        if (milhares > 0) {
-          parts.push(grupo(milhares) + ' mil');
-        }
-        if (resto > 0) {
-          parts.push(grupo(resto));
-        }
+        var parts = [];
+        if (milhoes > 0) parts.push(grupo(milhoes) + (milhoes === 1 ? ' milhao' : ' milhoes'));
+        if (milhares > 0) parts.push(grupo(milhares) + ' mil');
+        if (resto > 0) parts.push(grupo(resto));
 
         result = parts.join(', ');
         result += inteiro === 1 ? ' real' : ' reais';
